@@ -1,4 +1,7 @@
 #include "threadpool.h"
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
 
 int task_free(task_t *the_task)
 {
@@ -76,6 +79,18 @@ int tpool_init(tpool_t *the_pool, uint32_t tcount, void *(*func)(void *))
     the_pool->count = tcount;
     the_pool->queue = (tqueue_t *) malloc(sizeof(tqueue_t));
     tqueue_init(the_pool->queue);
+
+    the_pool->pipe.in = 0;
+    the_pool->pipe.out = 0;
+    the_pool->run = 1;
+
+    if (pipe((int *) &(the_pool->pipe))) {
+        printf("pipe fail!");
+        return -1;
+    };
+
+    fcntl(the_pool->pipe.out, F_SETFL, O_NONBLOCK | O_WRONLY);
+
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);

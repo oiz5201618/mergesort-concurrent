@@ -30,6 +30,15 @@ typedef struct {
     pthread_t *threads;
     uint32_t count;
     tqueue_t *queue;
+
+    /* use pipe */
+    struct {
+        int in;
+        int out;
+    } pipe;
+
+    unsigned int run;
+
 } tpool_t;
 
 int tpool_init(tpool_t *the_pool, uint32_t count, void *(*func)(void *));
