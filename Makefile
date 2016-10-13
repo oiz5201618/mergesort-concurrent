@@ -1,6 +1,8 @@
 CC = gcc
 CFLAGS = -std=gnu99 -Wall -g -pthread
 OBJS = list.o threadpool.o main.o
+DICT = dictionary/words.txt
+TAR  = dictionary/random.txt
 
 .PHONY: all clean test
 
@@ -14,10 +16,11 @@ $(GIT_HOOKS):
 
 deps := $(OBJS:%.o=.%.o.d)
 %.o: %.c
-	$(CC) $(CFLAGS) -o $@ -MMD -MF .$@.d -c $<
+	$(CC) $(CFLAGS) -o $@ -MMD -MF .$@.d -c $< 
 
 sort: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) -rdynamic
+	sort -R $(DICT) > $(TAR)
 
 clean:
 	rm -f $(OBJS) sort
